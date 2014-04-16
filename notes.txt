@@ -1,0 +1,44 @@
+* Concurrency
+
+** Founded on immutability
+*** Has its own benefits, but especially good for concurrency
+*** Concurrency implies mutability, and you want to limit its scope
+
+** Runs on the JVM
+*** High-performance thread scheduler
+*** Job-management primitives that are awkward but powerful
+Don't be afraid to use java.util.concurrent if clojure's set of more-convenient tools won't suffice
+
+** Clojure's concurrency philosophy
+*** Hickey's "Are we there yet?"
+**** Viewing should be cheap: locking is not acceptable
+Baseball example
+**** Identity is a series of state snapshots over time
+Car example
+
+** Clojure's concurrency toolkit
+*** State containers, identities
+atom, ref, agent(?), promise. var is more complicated but interesting.
+atoms are by far most common
+unified update model, as it applies to atom/ref/map
+*** Threading constructs
+future, agent/send(-off), seque
+Remember j.u.c: executors, thread pools
+Agents aren't actors! Names are similar, but they're not even close
+*** Reading: deref the magnificent
+Works for friggin everything
+*** Coordination/checkpointing/joining
+promise, deref
+** Case studies/examples
+*** 10 threads incrementing a variable 1000 times each, in java and clojure
+Shorter, simpler, and more correct
+*** Curling N website URLs
+Using map
+Using pmap (looks impressive, but pretty useless for real programs)
+With N futures of your own
+With a thread pool from j.u.c, a work queue, and a result-reporting area
+** Pitfalls/advice
+You probably don't need a ref. Or an agent.
+You probably only want one atom, which is the "root" of your mutable area
+Make your mutation "decisions" inside of swap!, or based on its return - NOT based on deref
+Don't put mutable things inside each other. Transactions can retry.
